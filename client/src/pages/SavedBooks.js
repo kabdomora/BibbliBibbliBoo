@@ -7,7 +7,7 @@ import {
   Col
 } from 'react-bootstrap';
 
-import { getMe, deleteBook } from '../utils/API';
+// import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import { useLazyQuery, useMutation } from '@apollo/client';
@@ -16,7 +16,7 @@ import { DELETE_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
-  const [user] = useLazyQuery(QUERY_ME);
+  const [oneUser] = useLazyQuery(QUERY_ME);
   const [deleteBook] = useMutation(DELETE_BOOK);
 
   // use this to determine if `useEffect()` hook needs to run again
@@ -48,7 +48,7 @@ const SavedBooks = () => {
          }
  
          // get current user's saved books
-         const {data} = await user( 
+         const {data} = await oneUser( 
            {
              variables: {
                id: user._id,
@@ -56,8 +56,6 @@ const SavedBooks = () => {
              }
            }
          );
-
-
 
         // setUserData(user);
         setUserData(data.user);
@@ -77,15 +75,32 @@ const SavedBooks = () => {
       return false;
     }
 
+    // try {
+    //   const response = await deleteBook(bookId, token);
+
+    //   if (!response.ok) {
+    //     throw new Error('something went wrong!');
+    //   }
+
+    //   const updatedUser = await response.json();
+    const authResponse = Auth.getProfile(token);
+    const user = authResponse.data;
+
+    if (!user) {
+      return false;
+    }
+
     try {
-      const response = await deleteBook(bookId, token);
+      const { data } = await deleteBook({
+        variables: {
+          id: user._id,
+          bookId: bookId
+        }
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
 
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
+      // setUserData(updatedUser);
+      setUserData(data.deleteBook);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
