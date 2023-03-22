@@ -39,9 +39,28 @@ const SavedBooks = () => {
 
         // const user = await response.json();
 
+         // get userData through token
+         const authResponse = Auth.getProfile(token);
+         const user = authResponse.data;
+ 
+         if (!user) {
+           return false;
+         }
+ 
+         // get current user's saved books
+         const {data} = await user( 
+           {
+             variables: {
+               id: user._id,
+               username: user.username
+             }
+           }
+         );
 
 
-        setUserData(user);
+
+        // setUserData(user);
+        setUserData(data.user);
       } catch (err) {
         console.error(err);
       }

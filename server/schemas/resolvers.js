@@ -6,7 +6,7 @@ const resolvers = {
         users: async () => {
             return User.find({}).populate('savedBooks');
         },       
-        user: async (parent, { id, username }, context) => {
+        oneUser: async (parent, { id, username }, context) => {
             const foundUser =  await User.findOne({
               $or: [{ _id: context.user ? context.user._id : id }, { username: username }],
             });
