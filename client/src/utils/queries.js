@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 import axios from 'axios';
 
 export const QUERY_ME = gql`
-  query User($id: ID!, $username: String!) {
-    user(id: $id, username: $username) {
+  query OneUser($id: ID!, $username: String!) {
+    oneUser(id: $id, username: $username) {
       savedBooks {
         _id
         authors
