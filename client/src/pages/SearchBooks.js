@@ -40,15 +40,15 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await searchGoogleBooks(searchInput);
+      // const response = await searchGoogleBooks(searchInput);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      // if (!response.ok) {
+      //   throw new Error('something went wrong!');
+      // }
 
-      const { items } = await response.json();
+      // const { items } = await response.json();
 
-      // const { data: { items } } = await searchGoogleBooks(searchInput);   //this may be the same as above. test it
+      const { data: { items } } = await searchGoogleBooks(searchInput);
 
       const bookData = items.map((book) => ({
         bookId: book.id,
@@ -78,27 +78,27 @@ const SearchBooks = () => {
     }
 
     // potentially replace this block
-    try {
-      const response = await saveBook(bookToSave, token);
+    // try {
+      // const response = await saveBook(bookToSave, token);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      // if (!response.ok) {
+      //   throw new Error('something went wrong!');
+      // }
 
-    //  const { data } = Auth.getProfile(token);
-    //  const userData = data;
+     const { data } = Auth.getProfile(token);
+     const userData = data;
  
-    //  if (!userData) {
-    //    return false;
-    //  }
+     if (!userData) {
+       return false;
+     }
  
-    //  try {
-    //    const { data } = await saveBook({
-    //      variables: { 
-    //        id: userData._id,
-    //        ...bookToSave
-    //      }
-    //    });
+     try {
+       const { data } = await saveBook({
+         variables: { 
+           id: userData._id,
+           ...bookToSave
+         }
+       });
 
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);

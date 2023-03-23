@@ -1,5 +1,6 @@
 const { User } = require('../models');
 const { signToken } = require('../utils/auth');
+const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
     Query: {
@@ -17,19 +18,19 @@ const resolvers = {
         },
     },
     Mutation: {
-        addUser: async (parent, { username, email, password }) => {
-            const user = await User.create({ username, email, password });
+        addUser: async (parent, args) => {
+            const user = await User.create(args);
             const token = signToken(user);
 
-            return { token, user };
+            return ({ token, user });
         },
-        login: async (parent, { email, password }) => {
-            const user = await User.findOne({ email });
+        login: async (parent, args) => {
+            const user = await User.findOne({ $or: [{ username: args.username }, { email: args.email }] });
             if (!user) {
               throw new AuthenticationError('No user found with this email address');
             }
 
-            const correctPw = await user.isCorrectPassword(password);
+            const correctPw = await user.isCorrectPassword(args.password);
 
             if (!correctPw) {
               throw new AuthenticationError('Incorrect credentials');
@@ -37,9 +38,9 @@ const resolvers = {
 
             const token = signToken(user);
 
-            return { token, user };
+            return ({ token, user });
         },
-        saveBook: async (parent, { _id, args }) => {
+        saveBook: async (parent, args) => {
             const updatedUser = await User.findOneAndUpdate(
                 { _id: args.id },
                 { $addToSet: {
@@ -58,9 +59,9 @@ const resolvers = {
 
               return updatedUser;
         },
-        deleteBook: async (parent, { _id, bookId }) => {
+        deleteBook: async (parent, { id, bookId }) => {
             const updatedUser = await User.findOneAndUpdate(
-                { _id },
+                { _id: id },
                 { $pull: { savedBooks: { bookId: bookId } } },
                 { new: true }
               );
