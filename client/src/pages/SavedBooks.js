@@ -58,14 +58,14 @@ const SavedBooks = () => {
          );
 
         // setUserData(user);
-        setUserData(data);
+        setUserData(data.oneUser);
       } catch (err) {
         console.error(err);
       }
     };
 
     getUserData();
-  }, [oneUser, userDataLength]);
+  }, [userDataLength]);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
