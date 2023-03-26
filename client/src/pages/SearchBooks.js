@@ -24,7 +24,8 @@ const SearchBooks = () => {
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
   // **NOTE: since savedBookIds refers to localStorage, as opposed to API call, the button disable will be inaccurate
-  // when multiple users use the same browser for account management. 
+  // when multiple users use the same browser for account management. add calls to establish user-specific 
+  // savedBooks array in localStorage upon login to resolve.
   const [saveBook] = useMutation(SAVE_BOOK);
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount

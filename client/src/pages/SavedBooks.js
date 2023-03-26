@@ -24,39 +24,41 @@ const SavedBooks = () => {
   
 
   useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const token = Auth.loggedIn() ? Auth.getToken() : null;
-
-        if (!token) {
-          return false;
-        }
-
-         const { data } = Auth.getProfile(token);
-         const user = data;
- 
-         if (!user) {
-           return false;
-         }
- 
-         // get current user's saved books
-         const thisUser = await oneUser( 
-           {
-             variables: {
-               id: user._id,
-               username: user.username
-             }
-           }
-         );
-
-        setUserData(thisUser.data.oneUser);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     getUserData();
-  }, [oneUser, userData]);
+  }, [userDataLength]);
+
+  const getUserData = async () => {
+    try {
+      const token = Auth.loggedIn() ? Auth.getToken() : null;
+
+      if (!token) {
+        return false;
+      }
+
+       const { data } = Auth.getProfile(token);
+       const user = data;
+
+       if (!user) {
+         return false;
+       }
+
+       // get current user's saved books
+       const thisUser = await oneUser( 
+         {
+           variables: {
+             id: user._id,
+             username: user.username
+           }
+         }
+       );
+       console.log(thisUser.data.oneUser);
+       console.log(userDataLength);
+
+      setUserData(thisUser.data.oneUser);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -81,12 +83,13 @@ const SavedBooks = () => {
         }
       });
 
-
-      // setUserData(updatedUser);
       setUserData(thisBook.data.deleteBook);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
-      window.location.reload();
+      // console.log(userData);
+      // console.log(thisBook);
+      // console.log(userDataLength);
+
     } catch (err) {
       console.error(err);
     }
@@ -102,6 +105,9 @@ const SavedBooks = () => {
       <div className='text-light bg-dark p-5'>
         <Container>
           <h1>Viewing saved books!</h1>
+          <Button className='btn-block' onClick={() => window.location.reload()}>
+            Refresh!
+          </Button>
         </Container>
       </div>
       <Container>

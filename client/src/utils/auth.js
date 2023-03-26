@@ -41,6 +41,8 @@ class AuthService {
   logout() {
     // Clear user token and profile data from localStorage
     localStorage.removeItem('id_token');
+    // localStorage.removeItem('saved_books');
+    // activate the above if/when api call is made to grab user's saved books
     // this will reload the page and reset the state of the application
     window.location.assign('/');
   }
