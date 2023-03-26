@@ -66,14 +66,6 @@ const SavedBooks = () => {
       return false;
     }
 
-    // try {
-    //   const response = await deleteBook(bookId, token);
-
-    //   if (!response.ok) {
-    //     throw new Error('something went wrong!');
-    //   }
-
-    //   const updatedUser = await response.json();
     const { data } = Auth.getProfile(token);
     const user = data;
 
@@ -82,7 +74,7 @@ const SavedBooks = () => {
     }
 
     try {
-      const { thisBook } = await deleteBook({
+      const thisBook = await deleteBook({
         variables: {
           id: user._id,
           bookId: bookId
@@ -91,9 +83,10 @@ const SavedBooks = () => {
 
 
       // setUserData(updatedUser);
-      setUserData(thisBook.deleteBook);
+      setUserData(thisBook.data.deleteBook);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
+      window.location.reload();
     } catch (err) {
       console.error(err);
     }
