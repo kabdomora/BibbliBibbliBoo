@@ -86,16 +86,16 @@ const SearchBooks = () => {
       // }
 
      const { data } = Auth.getProfile(token);
-     const userData = data;
+     const user = data;
  
-     if (!userData) {
+     if (!user) {
        return false;
      }
  
      try {
        await saveBook({
          variables: { 
-           id: userData._id,
+           id: user._id,
            ...bookToSave
          }
        });
@@ -144,8 +144,8 @@ const SearchBooks = () => {
         <Row>
           {searchedBooks.map((book) => {
             return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
+              <Col key={book.bookId} md="4">
+                <Card border='dark'>
                   {book.image ? (
                     <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
                   ) : null}

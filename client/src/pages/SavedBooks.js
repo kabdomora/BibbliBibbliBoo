@@ -10,17 +10,18 @@ import {
 // import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
-import { useQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { QUERY_ME } from '../utils/queries';
 import { DELETE_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
-  const [oneUser] = useQuery(QUERY_ME);
+  const [oneUser] = useLazyQuery(QUERY_ME);
   const [deleteBook] = useMutation(DELETE_BOOK);
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
+  
 
   useEffect(() => {
     const getUserData = async () => {
@@ -31,24 +32,15 @@ const SavedBooks = () => {
           return false;
         }
 
-        // const response = await getMe(token);
-
-        // if (!response.ok) {
-        //   throw new Error('something went wrong!');
-        // }
-
-        // const user = await response.json();
-
-         // get userData through token
-         const authResponse = Auth.getProfile(token);
-         const user = authResponse.data;
+         const { data } = Auth.getProfile(token);
+         const user = data;
  
          if (!user) {
            return false;
          }
  
          // get current user's saved books
-         const {data} = await oneUser( 
+         const thisUser = await oneUser( 
            {
              variables: {
                id: user._id,
@@ -57,15 +49,14 @@ const SavedBooks = () => {
            }
          );
 
-        // setUserData(user);
-        setUserData(data.oneUser);
+        setUserData(thisUser.data.oneUser);
       } catch (err) {
         console.error(err);
       }
     };
 
     getUserData();
-  }, [userDataLength]);
+  }, [oneUser, userData]);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -83,15 +74,15 @@ const SavedBooks = () => {
     //   }
 
     //   const updatedUser = await response.json();
-    const authResponse = Auth.getProfile(token);
-    const user = authResponse.data;
+    const { data } = Auth.getProfile(token);
+    const user = data;
 
     if (!user) {
       return false;
     }
 
     try {
-      const { data } = await deleteBook({
+      const { thisBook } = await deleteBook({
         variables: {
           id: user._id,
           bookId: bookId
@@ -100,7 +91,7 @@ const SavedBooks = () => {
 
 
       // setUserData(updatedUser);
-      setUserData(data.deleteBook);
+      setUserData(thisBook.deleteBook);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -115,7 +106,7 @@ const SavedBooks = () => {
 
   return (
     <>
-      <div fluid className='text-light bg-dark p-5'>
+      <div className='text-light bg-dark p-5'>
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
@@ -129,8 +120,8 @@ const SavedBooks = () => {
         <Row>
           {userData.savedBooks.map((book) => {
             return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
+              <Col key={book.bookId} md="4">
+                <Card border='dark'>
                   {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
