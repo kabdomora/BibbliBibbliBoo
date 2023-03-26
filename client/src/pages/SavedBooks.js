@@ -18,6 +18,7 @@ const SavedBooks = () => {
   const [userData, setUserData] = useState({});
   const [oneUser] = useLazyQuery(QUERY_ME);
   const [deleteBook] = useMutation(DELETE_BOOK);
+  const url = window.location.href;
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
@@ -25,7 +26,8 @@ const SavedBooks = () => {
 
   useEffect(() => {
     getUserData();
-  }, [userDataLength]);
+    console.log('effect')
+  }, [url, userDataLength]);
 
   const getUserData = async () => {
     try {
@@ -48,11 +50,12 @@ const SavedBooks = () => {
            variables: {
              id: user._id,
              username: user.username
-           }
+           },
+           pollInterval: 500,
          }
        );
        console.log(thisUser.data.oneUser);
-       console.log(userDataLength);
+      //  console.log(userDataLength);
 
       setUserData(thisUser.data.oneUser);
     } catch (err) {
@@ -105,7 +108,7 @@ const SavedBooks = () => {
       <div className='text-light bg-dark p-5'>
         <Container>
           <h1>Viewing saved books!</h1>
-          <Button className='btn-block' onClick={() => window.location.reload()}>
+          <Button className='btn-block' onClick={() => getUserData()}>
             Refresh!
           </Button>
         </Container>
