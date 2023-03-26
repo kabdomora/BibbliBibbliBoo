@@ -34,19 +34,6 @@ const LoginForm = () => {
 
       Auth.login(data.login.token);
     
-    // potentially replace this code
-
-    // try {
-    //   const response = await loginUser(userFormData);
-
-    //   if (!response.ok) {
-    //     throw new Error('something went wrong!');
-    //   }
-
-    //   const { token, user } = await response.json();
-    //   console.log(user);
-    //   Auth.login(token);
-      // to here
     } catch (err) {
       console.error(err);
       setShowAlert(true);

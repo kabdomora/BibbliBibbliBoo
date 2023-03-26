@@ -23,6 +23,8 @@ const SearchBooks = () => {
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+  // **NOTE: since savedBookIds refers to localStorage, as opposed to API call, the button disable will be inaccurate
+  // when multiple users use the same browser for account management. 
   const [saveBook] = useMutation(SAVE_BOOK);
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
@@ -40,14 +42,6 @@ const SearchBooks = () => {
     }
 
     try {
-      // const response = await searchGoogleBooks(searchInput);
-
-      // if (!response.ok) {
-      //   throw new Error('something went wrong!');
-      // }
-
-      // const { items } = await response.json();
-
       const { data: { items } } = await searchGoogleBooks(searchInput);
 
       const bookData = items.map((book) => ({
@@ -76,14 +70,6 @@ const SearchBooks = () => {
     if (!token) {
       return false;
     }
-
-    // potentially replace this block
-    // try {
-      // const response = await saveBook(bookToSave, token);
-
-      // if (!response.ok) {
-      //   throw new Error('something went wrong!');
-      // }
 
      const { data } = Auth.getProfile(token);
      const user = data;
